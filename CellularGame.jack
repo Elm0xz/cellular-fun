@@ -10,7 +10,7 @@ class CellularGame {
 
     constructor CellularGame new() {
         do Graphics.drawFrame(2, 2, 124, 253);
-        let crosshair = Crosshair.new(316, 125);
+        let crosshair = Crosshair.new(0, 0);
         do crosshair.draw();
         return this;
     }
@@ -32,7 +32,6 @@ class CellularGame {
             while (key = 0) {
                 let key = Keyboard.keyPressed();
             }
-        //TODO
         //space - place/remove cell
         // wsad - move
         //p - pause
@@ -40,24 +39,30 @@ class CellularGame {
         //c - clear
         //b - quit
         if (key = 66)   { let exit = true; }     // b - quit
-        if (key = 87)   { do crosshair.moveUp(); } // w = move crosshair up
-        if (key = 83)   { do crosshair.moveDown(); } // s = move crosshair down
-        if (key = 65)   { do crosshair.moveLeft(); } // a = move crosshair left
-        if (key = 68)   { do crosshair.moveRight(); } // d = move crosshair right
-        //  if (key = 90)  { do square.decSize(); } // z key
-        //  if (key = 88)  { do square.incSize(); } // x key
-        //  if (key = 131) { let direction = 1; }   // up arrow
-        //  if (key = 133) { let direction = 2; }   // down arrow
-        //  if (key = 130) { let direction = 3; }   // left arrow
-        //  if (key = 132) { let direction = 4; }   // right arrow
+        if (isWSAD(key)) { do moveCrosshair(key); } // move crosshair on w, s, a, d
 
          // waits for the key to be released
          while (~(key = 0)) {
             let key = Keyboard.keyPressed();
-            //do moveSquare();
         }
-    } // while
+    }
         do Screen.clearScreen();
+        return;
+    }
+
+    method boolean isWSAD(char key) {
+        return ((key = 87) | (key = 83) | (key = 65) | (key = 68));
+    }
+
+    method void moveCrosshair(char key) {
+        while (~(key = 0)) {
+            let key = Keyboard.keyPressed();
+            if (key = 87)   { do crosshair.moveUp(); } // w = move crosshair up
+            if (key = 83)   { do crosshair.moveDown(); }// s = move crosshair down
+            if (key = 65)   { do crosshair.moveLeft(); } // a = move crosshair left
+            if (key = 68)   { do crosshair.moveRight(); } // d = move crosshair right
+            do Sys.wait(100);
+        }
         return;
     }
 }
