@@ -1,0 +1,63 @@
+/**
+ * Implements simple cellular automaton game.
+ * This game allows the user to run Conway's Game of Life simulation.
+ * At the beginning, user defines the starting pattern for game.
+ * During the simulation, user can pause game at any moment and modify the pattern.
+ */
+
+class CellularGame {
+    field Crosshair crosshair;
+
+    constructor CellularGame new() {
+        do Graphics.drawFrame(2, 2, 124, 253);
+        let crosshair = Crosshair.new(316, 125);
+        do crosshair.draw();
+        return this;
+    }
+
+    method void dispose() {
+        do crosshair.dispose();
+        do Memory.deAlloc(this);
+        return;
+    }
+
+    /** Runs the game, handles user input. */
+    method void run() {
+        var char key;
+        var boolean exit;
+        let exit = false;
+      
+        while (~exit) {
+         // waits for a key to be pressed
+            while (key = 0) {
+                let key = Keyboard.keyPressed();
+            }
+        //TODO
+        //space - place/remove cell
+        // wsad - move
+        //p - pause
+        //o - resume
+        //c - clear
+        //b - quit
+        if (key = 66)   { let exit = true; }     // b - quit
+        if (key = 87)   { do crosshair.moveUp(); } // w = move crosshair up
+        if (key = 83)   { do crosshair.moveDown(); } // s = move crosshair down
+        if (key = 65)   { do crosshair.moveLeft(); } // a = move crosshair left
+        if (key = 68)   { do crosshair.moveRight(); } // d = move crosshair right
+        //  if (key = 90)  { do square.decSize(); } // z key
+        //  if (key = 88)  { do square.incSize(); } // x key
+        //  if (key = 131) { let direction = 1; }   // up arrow
+        //  if (key = 133) { let direction = 2; }   // down arrow
+        //  if (key = 130) { let direction = 3; }   // left arrow
+        //  if (key = 132) { let direction = 4; }   // right arrow
+
+         // waits for the key to be released
+         while (~(key = 0)) {
+            let key = Keyboard.keyPressed();
+            //do moveSquare();
+        }
+    } // while
+        do Screen.clearScreen();
+        return;
+    }
+}
