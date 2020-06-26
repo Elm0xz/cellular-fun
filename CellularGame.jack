@@ -5,19 +5,46 @@
  * During the simulation, user can pause game at any moment and modify the pattern.
  */
 
+        //space - place/remove cell
+        //p - pause
+        //o - resume/start
+        //c - clear
+        //b - quit
+
 class CellularGame {
     field Crosshair crosshair;
+    field Board board;
 
     constructor CellularGame new() {
-        do Graphics.drawFrame(2, 2, 124, 253);
-        let crosshair = Crosshair.new(0, 0);
-        do crosshair.draw();
+        do drawMenu();
+        do initBoard();
+        do initCrosshair();
         return this;
     }
 
-    method void dispose() {
+        method void dispose() {
         do crosshair.dispose();
+        do board.dispose();
         do Memory.deAlloc(this);
+        return;
+    }
+
+    /** Draws game menu. */
+    method void drawMenu() {
+        do Graphics.drawFrame(2, 2, 124, 253);
+        return;
+    }
+
+    /** Initializes game crosshair. Crosshair is used to place/remove cells. */
+    method void initCrosshair() {
+        let crosshair = Crosshair.new(0, 0);
+        do crosshair.draw(false);
+        return;
+    }
+
+    /** Initializes game board. */
+    method void initBoard() {
+        let board = Board.new();
         return;
     }
 
@@ -28,24 +55,26 @@ class CellularGame {
         let exit = false;
       
         while (~exit) {
-         // waits for a key to be pressed
+        // waits for a key to be pressed
             while (key = 0) {
                 let key = Keyboard.keyPressed();
             }
-        //space - place/remove cell
-        // wsad - move
-        //p - pause
-        //o - resume
-        //c - clear
-        //b - quit
-        if (key = 66)   { let exit = true; }     // b - quit
-        if (isWSAD(key)) { do moveCrosshair(key); } // move crosshair on w, s, a, d
+            if (key = 66)   { let exit = true; } // b - quit
+            while (isWSAD(key)) { 
+                let key = Keyboard.keyPressed();
+                do moveCrosshair(key); // move crosshair on w, s, a, d
+            }
+            if (key = 32) { // space - toggle cell value
+                do board.toggleCell(crosshair.getX(), crosshair.getY());
+                do board.draw();
+                do crosshair.draw(board.getCellColor(crosshair.getX(), crosshair.getY()));
+            }
 
-         // waits for the key to be released
-         while (~(key = 0)) {
-            let key = Keyboard.keyPressed();
+        // waits for the key to be released
+            while (~(key = 0)) {
+                let key = Keyboard.keyPressed();
+            }
         }
-    }
         do Screen.clearScreen();
         return;
     }
@@ -54,15 +83,37 @@ class CellularGame {
         return ((key = 87) | (key = 83) | (key = 65) | (key = 68));
     }
 
+    /** Move crosshair on w, s, a, d. */
     method void moveCrosshair(char key) {
-        while (~(key = 0)) {
-            let key = Keyboard.keyPressed();
-            if (key = 87)   { do crosshair.moveUp(); } // w = move crosshair up
-            if (key = 83)   { do crosshair.moveDown(); }// s = move crosshair down
-            if (key = 65)   { do crosshair.moveLeft(); } // a = move crosshair left
-            if (key = 68)   { do crosshair.moveRight(); } // d = move crosshair right
-            do Sys.wait(100);
+
+        if (board.getCellColor(crosshair.getX(), crosshair.getY())) {
+            do board.drawCell(crosshair.getX(), crosshair.getY(), true);
         }
+        if (key = 87) { // w = move crosshair up
+            do crosshair.erase(board.getCellColor(crosshair.getX(), crosshair.getY()));
+            do crosshair.moveUp(); 
+            do crosshair.draw(board.getCellColor(crosshair.getX(), crosshair.getY()));
+            } 
+        if (key = 83) { // s = move crosshair down
+            do crosshair.erase(board.getCellColor(crosshair.getX(), crosshair.getY()));
+            do crosshair.moveDown();
+            do crosshair.draw(board.getCellColor(crosshair.getX(), crosshair.getY()));
+            }
+        if (key = 65) { // a = move crosshair left
+            do crosshair.erase(board.getCellColor(crosshair.getX(), crosshair.getY()));
+            do crosshair.moveLeft();
+            do crosshair.draw(board.getCellColor(crosshair.getX(), crosshair.getY()));
+            } 
+        if (key = 68) { // d = move crosshair right
+            do crosshair.erase(board.getCellColor(crosshair.getX(), crosshair.getY()));
+            do crosshair.moveRight();
+            do crosshair.draw(board.getCellColor(crosshair.getX(), crosshair.getY()));
+            } 
+        if (board.getCellColor(crosshair.getX(), crosshair.getY())) {
+            do board.drawCell(crosshair.getX(), crosshair.getY(), true);
+            do crosshair.draw(true);
+        }
+        do Sys.wait(200);
         return;
     }
 }

@@ -1,8 +1,8 @@
-/**Implements a graphical crosshair used to select a cell. */
+/**Implements graphical crosshair used to select a cell. */
 class Crosshair {
     field int x, y;
 
-    /**Constructs a new crosshair in given coordinates. 
+    /** Constructs a new crosshair in given coordinates. 
      * The coordinates describe crosshair tile on 24x16 game board, indexed from 0. 
      */
     constructor Crosshair new(int cx, int cy) {
@@ -11,87 +11,108 @@ class Crosshair {
         return this;
     }
 
+    method int getX() {
+        return x;
+    }
+
+    method int getY() {
+        return y;
+    }
+
     method void dispose() {
         do Memory.deAlloc(this);
         return;
     }
 
-    /**Draws the crosshair. */
-    method void draw() {
-        do Screen.setColor(true);
-        do drawCrosshair((8+x)+(32*16*y));
+    /** Draws the crosshair. */
+    method void draw(boolean bkgColor) {
+        do drawCrosshair((8+x)+(32*16*y), bkgColor);
         return;
     }
 
-    /**Erases the crosshair. */
-    method void erase() {
-        do Screen.setColor(false);
+    /** Erases the crosshair. */
+    method void erase(boolean bkgColor) {
+        do Screen.setColor(bkgColor);
         do eraseCrosshair(128+(x*16),(y*16));
         return;
     }
 
-    /**Draws the crosshair sprite. */
-    method void drawCrosshair(int location) {
+    /** Draws the crosshair sprite. */
+    method void drawCrosshair(int location, boolean bkgColor) {
         var int memAddress;
         let memAddress = 16384+location;
-	    do Memory.poke(memAddress+0, -961);
-	    do Memory.poke(memAddress+32, -961);
-	    do Memory.poke(memAddress+64, -16381);
-	    do Memory.poke(memAddress+96, -16381);
-	    do Memory.poke(memAddress+128, -14317);
-	    do Memory.poke(memAddress+160, -15325);
-	    do Memory.poke(memAddress+192, 576);
-	    do Memory.poke(memAddress+224, 384);
-	    do Memory.poke(memAddress+256, 384);
-	    do Memory.poke(memAddress+288, 576);
-	    do Memory.poke(memAddress+320, -15325);
-	    do Memory.poke(memAddress+352, -14317);
-	    do Memory.poke(memAddress+384, -16381);
-	    do Memory.poke(memAddress+416, -16381);
-	    do Memory.poke(memAddress+448, -961);
-	    do Memory.poke(memAddress+480, -961);
+        if (~bkgColor) { 
+            do Memory.poke(memAddress+0, -961);
+	        do Memory.poke(memAddress+32, -961);
+	        do Memory.poke(memAddress+64, -16381);
+	        do Memory.poke(memAddress+96, -16381);
+	        do Memory.poke(memAddress+128, -14317);
+	        do Memory.poke(memAddress+160, -15325);
+	        do Memory.poke(memAddress+192, 576);
+	        do Memory.poke(memAddress+224, 384);
+	        do Memory.poke(memAddress+256, 384);
+	        do Memory.poke(memAddress+288, 576);
+	        do Memory.poke(memAddress+320, -15325);
+	        do Memory.poke(memAddress+352, -14317);
+	        do Memory.poke(memAddress+384, -16381);
+	        do Memory.poke(memAddress+416, -16381);
+	        do Memory.poke(memAddress+448, -961);
+	        do Memory.poke(memAddress+480, -961);
+        }
+        else {
+            do Memory.poke(memAddress+0, 960);
+	        do Memory.poke(memAddress+32, 960);
+	        do Memory.poke(memAddress+64, 16380);
+	        do Memory.poke(memAddress+96, 16380);
+	        do Memory.poke(memAddress+128, 14316);
+	        do Memory.poke(memAddress+160, 15324);
+	        do Memory.poke(memAddress+192, -577);
+	        do Memory.poke(memAddress+224, -385);
+	        do Memory.poke(memAddress+256, -385);
+	        do Memory.poke(memAddress+288, -577);
+	        do Memory.poke(memAddress+320, 15324);
+	        do Memory.poke(memAddress+352, 14316);
+	        do Memory.poke(memAddress+384, 16380);
+	        do Memory.poke(memAddress+416, 16380);
+	        do Memory.poke(memAddress+448, 960);
+	        do Memory.poke(memAddress+480, 960);
+        }
+	    
         return;
     }
 
+    /** Erases the crosshair sprite by drawing background color rectangle at its place. */ 
     method void eraseCrosshair(int x, int y) {
         do Screen.drawRectangle(x, y, x+15, y+15);
         return;
 
     }
 
-    /**Moves crosshair one tile up. */
+    /** Moves crosshair one tile up. */
     method void moveUp() {
-        do erase();
         if (y>0) { let y = y-1; }
         else     { let y = 15; }
-        do draw();
         return;
     }
 
-    /**Moves crosshair one tile down. */
+    /** Moves crosshair one tile down. */
     method void moveDown() {
-        do erase();
         if (y<15) { let y = y+1; }
         else      { let y = 0; }
-        do draw();
         return;
     }
 
-    /**Moves crosshair one tile left. */
+    /** Moves crosshair one tile left. */
     method void moveLeft() {
-        do erase();
         if (x>0) { let x = x-1; }
         else     { let x = 23; }
-        do draw();
         return;
     }
 
-    /**Moves crosshair one tile right. */
+    /** Moves crosshair one tile right. */
     method void moveRight() {
-        do erase();
         if (x<23) { let x = x+1; }
         else      { let x = 0; }
-        do draw();
         return;
     }
 }

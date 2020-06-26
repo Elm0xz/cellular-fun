@@ -1,0 +1,78 @@
+/**Implements game board storing cell values. */
+class Board {
+    field Array cells;
+    field int x, y;
+
+    constructor Board new() {
+        var int i;
+
+        let x = 24;
+        let y = 16;
+
+        let cells = Array.new(x);
+
+        let i = 0;
+        while (i < x) {
+            let cells[i] = Array.new(y);
+            let i = i+1;
+        }
+        return this;
+    }
+
+    method void dispose() {
+        do cells.dispose();
+        do Memory.deAlloc(this);
+        return;
+    }
+
+    /** Toggles cell state (placed/removed). */
+    method void toggleCell(int cx, int cy) {
+        var Array column;
+        var boolean cellState;
+
+        let column = cells[cx];
+        let cellState = column[cy];
+
+        if (cellState) {
+            let column[cy] = false;
+        }
+        else {
+            let column[cy] = true;
+        }
+        return;
+    }
+
+    /** Checks color of cell on given coordinates x, y. */
+    method boolean getCellColor(int cx, int cy) {
+        var Array column;
+        var boolean cellColor;
+
+        let column = cells[cx];
+        let cellColor = column[cy];
+        return cellColor;
+    }
+ 
+    /** Draws all cells on the board. */
+    method void draw() {
+        var int i, j, column, cell;
+        let i = 0;
+        while (i < x) {
+            let j = 0;
+            let column = cells[i];
+            while (j < y) {
+                let cell = column[j];
+                do drawCell(i, j, cell);
+                let j = j+1;
+            }
+            let i = i+1;
+        }
+        return;
+    }
+
+    /** Draws cell on given coordinates using the set color (false - white, true - black). */
+    method void drawCell(int x, int y, boolean color) {
+        do Screen.setColor(color);
+        do Screen.drawRectangle(128+(x*16), (y*16), 128+(x*16)+15, (y*16)+15);
+        return;
+    }
+}
