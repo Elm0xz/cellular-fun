@@ -4,25 +4,49 @@ class Board {
     field int x, y;
 
     constructor Board new() {
-        var int i;
-
         let x = 24;
         let y = 16;
 
-        let cells = Array.new(x);
+        let cells = initNewCells();
 
-        let i = 0;
-        while (i < x) {
-            let cells[i] = Array.new(y);
-            let i = i+1;
-        }
         return this;
     }
 
     method void dispose() {
-        do cells.dispose();
+        do disposeCells();
         do Memory.deAlloc(this);
         return;
+    }
+
+    method void disposeCells() {
+        do disposeColumns();
+        do cells.dispose();
+        return;
+    }
+
+    method void disposeColumns() {
+        var int i;
+        var Array column;
+
+        while (i < x) {
+            let column = cells[i];
+            do column.dispose();
+            let i = i+1;
+        }
+        return;
+    }
+
+    method Array initNewCells() {
+        var Array newCells;
+        var int i;
+
+        let newCells = Array.new(x);
+        let i = 0;
+        while (i < x) {
+            let newCells[i] = Array.new(y);
+            let i = i+1;
+        }
+        return newCells;
     }
 
     /** Toggles cell state (placed/removed). */
@@ -42,19 +66,21 @@ class Board {
         return;
     }
 
-    /** Checks color of cell on given coordinates x, y. */
-    method boolean getCellColor(int cx, int cy) {
+    /** Checks state of cell on given coordinates x, y. */
+    method boolean getCellState(int cx, int cy) {
         var Array column;
-        var boolean cellColor;
+        var boolean cellState;
 
         let column = cells[cx];
-        let cellColor = column[cy];
-        return cellColor;
+        let cellState = column[cy];
+        return cellState;
     }
  
     /** Draws all cells on the board. */
     method void draw() {
-        var int i, j, column, cell;
+        var int i, j;
+        var Array column;
+        var boolean cell;
         let i = 0;
         while (i < x) {
             let j = 0;
@@ -69,7 +95,7 @@ class Board {
         return;
     }
 
-    /** Draws cell on given coordinates using the set color (false - white, true - black). */
+    /** Draws cell on given coordinates using set color (false - white, true - black). */
     method void drawCell(int x, int y, boolean color) {
         do Screen.setColor(color);
         do Screen.drawRectangle(128+(x*16), (y*16), 128+(x*16)+15, (y*16)+15);
@@ -78,7 +104,9 @@ class Board {
 
     /** Clears board, setting all cells to white. */
     method void clear() {
-        var int i, j, column, cell;
+        var int i, j;
+        var Array column;
+        var boolean cell;
         let i = 0;
         while (i < x) {
             let j = 0;
@@ -91,5 +119,122 @@ class Board {
             let i = i+1;
         }
         return;
+    }
+
+    /** Transforms board cells according to Game of Life rules. */
+    method void nextGeneration() {
+        var int i, j, neighboursCount;
+        var Array newGenCells, newColumn, column;
+        var boolean newCell, cell;
+        
+        let newGenCells = initNewCells();
+        let i = 0;
+        let neighboursCount = 0;
+        
+        while (i < x) {
+            let j = 0;
+            let column = cells[i];
+            let newColumn = newGenCells[i];
+            while (j < y) {
+                let cell = column[j];
+                let neighboursCount = checkUpNeighbor(i, j) + checkLeftNeighbors(i, j) + checkRightNeighbors(i, j) + checkDownNeighbor(i, j);
+                if (cell) {
+                    if ((neighboursCount = 2) | (neighboursCount = 3)) {
+                        let newColumn[j] = true;  // Any live cell with two or three live neighbours survives
+                    }
+                    else {
+                        let newColumn[j] = false; // All other live cells die in the next generation
+                    }
+                }
+                else { 
+                    if (neighboursCount = 3) { // Any dead cell with three live neighbours becomes a live cell
+                        let newColumn[j] = true;
+                    }
+                    else {
+                        let newColumn[j] = false; // All other dead cells stay dead
+                    }
+                }
+                let j = j+1;
+            }
+            let i = i+1;
+        }
+        do disposeCells(); //remove previous generation
+        let cells = newGenCells; //save new generation as current
+        return;
+    }
+
+    /** Checks if up neighbor of the cell under coordinates i, j is alive. */
+    method int checkUpNeighbor(int i, int j) {
+        var int jLcl;
+        if (j = 0) {
+            let jLcl = 16;
+        } 
+        else { 
+            let jLcl = j; 
+        }
+        if (getCellState(i, jLcl-1)) {
+            return 1;
+        }
+        else {
+            return 0;
+        }
+    }
+
+    /** Checks if down neighbor of the cell under coordinates i, j is alive. */
+    method int checkDownNeighbor(int i, int j) {
+        var int jLcl;
+        if (j = 15) {
+            let jLcl = -1;
+        } 
+        else { 
+            let jLcl = j; 
+        }
+        if (getCellState(i, jLcl+1)) {
+            return 1;
+        }
+        else {
+            return 0;
+        }
+    }
+
+    /** Checks if 3 left neighbors of the cell under coordinates i, j are alive. */
+    method int checkLeftNeighbors(int i, int j) {
+        var int iLcl, leftNeighborsCount;
+        if (i = 0) {
+            let iLcl = 24;
+        } 
+        else { 
+            let iLcl = i; 
+        }
+        
+        if (getCellState(iLcl-1, j)) {
+            let leftNeighborsCount = 1;
+        }
+        else {
+            let leftNeighborsCount = 0;
+        }
+
+        let leftNeighborsCount = leftNeighborsCount + checkUpNeighbor(iLcl-1, j) + checkDownNeighbor(iLcl-1,j);
+        return leftNeighborsCount;
+    }
+
+    /** Checks if 3 right neighbors of the cell under coordinates i, j are alive. */
+    method int checkRightNeighbors(int i, int j) {
+        var int iLcl, rightNeighborsCount;
+        if (i = 23) {
+            let iLcl = -1;
+        } 
+        else { 
+            let iLcl = i; 
+        }
+        if (getCellState(iLcl+1, j)) {
+            let rightNeighborsCount = 1;
+        }
+        else {
+            let rightNeighborsCount = 0;
+        }
+
+        let rightNeighborsCount = rightNeighborsCount + checkUpNeighbor(iLcl+1, j) + checkDownNeighbor(iLcl+1,j);
+        return rightNeighborsCount;
     }
 }

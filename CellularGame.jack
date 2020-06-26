@@ -4,7 +4,7 @@
  * At the beginning, user defines the starting seed for game.
  * During the simulation, user can pause game at any moment and modify the pattern.
  */
-
+        //w, s, a, d - move crosshair
         //space - place/remove cell
         //p - pause
         //o - resume/start
@@ -66,14 +66,14 @@ class CellularGame {
             if (key = 79) { // o - start/resume game
                 let active = true;
                 do menu.drawGameMenu();
-                //TODO hide crosshair
+                do crosshair.erase(board.getCellState(crosshair.getX(), crosshair.getY()));
                 while (active) {
                     do nextGeneration();
                     let key = Keyboard.keyPressed();
                     if (key = 80) {
                         let active = false; // p - stop game
                         do menu.drawMainMenu();
-                        //TODO restore crosshair
+                        do crosshair.draw(board.getCellState(crosshair.getX(), crosshair.getY()));
                     }
                 }
             }
@@ -85,7 +85,7 @@ class CellularGame {
             if (key = 32) { // space - toggle cell value
                 do board.toggleCell(crosshair.getX(), crosshair.getY());
                 do board.draw();
-                do crosshair.draw(board.getCellColor(crosshair.getX(), crosshair.getY()));
+                do crosshair.draw(board.getCellState(crosshair.getX(), crosshair.getY()));
             }
             if (key = 67) { // c - clear the game board
                 do board.clear(); 
@@ -108,40 +108,41 @@ class CellularGame {
     /** Moves crosshair on w, s, a, d. */
     method void moveCrosshair(char key) {
 
-        if (board.getCellColor(crosshair.getX(), crosshair.getY())) {
+        if (board.getCellState(crosshair.getX(), crosshair.getY())) {
             do board.drawCell(crosshair.getX(), crosshair.getY(), true);
         }
         if (key = 87) { // w = move crosshair up
-            do crosshair.erase(board.getCellColor(crosshair.getX(), crosshair.getY()));
+            do crosshair.erase(board.getCellState(crosshair.getX(), crosshair.getY()));
             do crosshair.moveUp(); 
-            do crosshair.draw(board.getCellColor(crosshair.getX(), crosshair.getY()));
+            do crosshair.draw(board.getCellState(crosshair.getX(), crosshair.getY()));
             } 
         if (key = 83) { // s = move crosshair down
-            do crosshair.erase(board.getCellColor(crosshair.getX(), crosshair.getY()));
+            do crosshair.erase(board.getCellState(crosshair.getX(), crosshair.getY()));
             do crosshair.moveDown();
-            do crosshair.draw(board.getCellColor(crosshair.getX(), crosshair.getY()));
+            do crosshair.draw(board.getCellState(crosshair.getX(), crosshair.getY()));
             }
         if (key = 65) { // a = move crosshair left
-            do crosshair.erase(board.getCellColor(crosshair.getX(), crosshair.getY()));
+            do crosshair.erase(board.getCellState(crosshair.getX(), crosshair.getY()));
             do crosshair.moveLeft();
-            do crosshair.draw(board.getCellColor(crosshair.getX(), crosshair.getY()));
+            do crosshair.draw(board.getCellState(crosshair.getX(), crosshair.getY()));
             } 
         if (key = 68) { // d = move crosshair right
-            do crosshair.erase(board.getCellColor(crosshair.getX(), crosshair.getY()));
+            do crosshair.erase(board.getCellState(crosshair.getX(), crosshair.getY()));
             do crosshair.moveRight();
-            do crosshair.draw(board.getCellColor(crosshair.getX(), crosshair.getY()));
+            do crosshair.draw(board.getCellState(crosshair.getX(), crosshair.getY()));
             } 
-        if (board.getCellColor(crosshair.getX(), crosshair.getY())) {
+        if (board.getCellState(crosshair.getX(), crosshair.getY())) {
             do board.drawCell(crosshair.getX(), crosshair.getY(), true);
             do crosshair.draw(true);
         }
-        do Sys.wait(200);
+        do Sys.wait(140);
         return;
     }
 
     method void nextGeneration() {
-        // do Output.printString("Next Generation!");
-        do Sys.wait(500);
+        do board.nextGeneration();
+        do board.draw();
+        do Sys.wait(1000);
         return;
     }
 }
