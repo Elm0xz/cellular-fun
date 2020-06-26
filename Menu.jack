@@ -1,0 +1,86 @@
+/** Implements game menu. */
+class Menu {
+    field int i;
+
+    constructor Menu new() {
+        let i = 1;
+        return this;
+    }
+
+    method void dispose() {
+        do Memory.deAlloc(this);
+        return;
+    }
+
+    /** Draws game main menu, showing title and basic user actions. */
+    method void drawMainMenu() {
+        do eraseMenu();
+        do drawFrame(2, 2, 124, 253);
+        do Output.moveCursor(1, 2);
+        do Output.printString("GAME OF LIFE");
+        do Output.moveCursor(4, 2);
+        do Output.printString("Use crosshair");
+        do Output.moveCursor(5, 2);
+        do Output.printString("to define a");
+        do Output.moveCursor(6, 2);
+        do Output.printString("seed pattern.");
+        do Output.moveCursor(8, 2);
+        do Output.printString("Controls:");
+        do Output.moveCursor(9, 2);
+        do Output.printString("w - up");
+        do Output.moveCursor(10, 2);
+        do Output.printString("s - down");
+        do Output.moveCursor(11, 2);
+        do Output.printString("a - left");
+        do Output.moveCursor(12, 2);
+        do Output.printString("d - right");
+        do Output.moveCursor(13, 2);
+        do Output.printString("space - place");
+        do Output.moveCursor(14, 2);
+        do Output.printString("/remove cell");
+        do Output.moveCursor(15, 2);
+        do Output.printString("o - start");
+        do Output.moveCursor(16, 2);
+        do Output.printString("c - clear");
+        do Output.moveCursor(17, 2);
+        do Output.printString("b - quit");
+        do Output.println();
+        return;
+    }
+
+    method void drawGameMenu() {
+        do eraseMenu();
+        do drawFrame(2, 2, 124, 253);
+        do Output.moveCursor(1, 2);
+        do Output.printString("GAME OF LIFE");
+        do Output.moveCursor(4, 2);
+        do Output.printString("*SIMULATION");
+        do Output.moveCursor(5, 2);
+        do Output.printString("IN PROGRESS*");
+        do Output.moveCursor(7, 2);
+        do Output.printString("Controls:");
+        do Output.moveCursor(8, 2);
+        do Output.printString("p - pause");
+        return;
+    }
+
+    /** Draws two-layer frame with top left corner in (x1, y1) and bottom right corner in (x2, y2).*/
+    method void drawFrame(int x1, int y1, int x2, int y2) {
+        do Screen.setColor(true);
+        do Screen.drawLine(x1, y1, x1, y2);
+        do Screen.drawLine(x1+2, y1+2, x1+2, y2-2);
+        do Screen.drawLine(x1, y1, x2, y1);
+        do Screen.drawLine(x1+2, y1+2, x2-2, y1+2);
+        do Screen.drawLine(x1, y2, x2, y2);
+        do Screen.drawLine(x1+2, y2-2, x2-2, y2-2);
+        do Screen.drawLine(x2, y1, x2, y2);
+        do Screen.drawLine(x2-2, y1+2, x2-2, y2-2);
+        return;
+    }
+
+    method void eraseMenu() {
+        do Screen.setColor(false);
+        do Screen.drawRectangle(0, 0, 126, 255);
+        return;
+    }
+}

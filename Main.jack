@@ -5,14 +5,6 @@ class Main {
         let game = CellularGame.new();
         do game.run();
         do game.dispose();
-        /** menu*/
-        // do Output.moveCursor(1, 2);
-        // do Output.printString("Some text");
-        // do Output.moveCursor(2, 2);
-        // do Output.printString("More text");
-        // do Output.moveCursor(3, 2);
-        // do Output.printString("Another text");
-        // do Output.println();
         return;
     }
 }

@@ -1,7 +1,7 @@
 /**
  * Implements simple cellular automaton game.
  * This game allows the user to run Conway's Game of Life simulation.
- * At the beginning, user defines the starting pattern for game.
+ * At the beginning, user defines the starting seed for game.
  * During the simulation, user can pause game at any moment and modify the pattern.
  */
 
@@ -14,24 +14,27 @@
 class CellularGame {
     field Crosshair crosshair;
     field Board board;
+    field Menu menu;
 
     constructor CellularGame new() {
-        do drawMenu();
+        do initMenu();
         do initBoard();
         do initCrosshair();
         return this;
     }
 
-        method void dispose() {
+    method void dispose() {
         do crosshair.dispose();
         do board.dispose();
+        do menu.dispose();
         do Memory.deAlloc(this);
         return;
     }
 
-    /** Draws game menu. */
-    method void drawMenu() {
-        do Graphics.drawFrame(2, 2, 124, 253);
+    /** Initializes game menu. */
+    method void initMenu() {
+        let menu = Menu.new();
+        do menu.drawMainMenu();        
         return;
     }
 
@@ -51,15 +54,30 @@ class CellularGame {
     /** Runs the game, handles user input. */
     method void run() {
         var char key;
-        var boolean exit;
+        var boolean exit, active;
         let exit = false;
+        let active = false;
       
         while (~exit) {
         // waits for a key to be pressed
             while (key = 0) {
                 let key = Keyboard.keyPressed();
             }
-            if (key = 66)   { let exit = true; } // b - quit
+            if (key = 79) { // o - start/resume game
+                let active = true;
+                do menu.drawGameMenu();
+                //TODO hide crosshair
+                while (active) {
+                    do nextGeneration();
+                    let key = Keyboard.keyPressed();
+                    if (key = 80) {
+                        let active = false; // p - stop game
+                        do menu.drawMainMenu();
+                        //TODO restore crosshair
+                    }
+                }
+            }
+            if (key = 66) { let exit = true; } // b - quit game
             while (isWSAD(key)) { 
                 let key = Keyboard.keyPressed();
                 do moveCrosshair(key); // move crosshair on w, s, a, d
@@ -69,6 +87,10 @@ class CellularGame {
                 do board.draw();
                 do crosshair.draw(board.getCellColor(crosshair.getX(), crosshair.getY()));
             }
+            if (key = 67) { // c - clear the game board
+                do board.clear(); 
+                do crosshair.draw(false);
+            } 
 
         // waits for the key to be released
             while (~(key = 0)) {
@@ -83,7 +105,7 @@ class CellularGame {
         return ((key = 87) | (key = 83) | (key = 65) | (key = 68));
     }
 
-    /** Move crosshair on w, s, a, d. */
+    /** Moves crosshair on w, s, a, d. */
     method void moveCrosshair(char key) {
 
         if (board.getCellColor(crosshair.getX(), crosshair.getY())) {
@@ -114,6 +136,12 @@ class CellularGame {
             do crosshair.draw(true);
         }
         do Sys.wait(200);
+        return;
+    }
+
+    method void nextGeneration() {
+        // do Output.printString("Next Generation!");
+        do Sys.wait(500);
         return;
     }
 }

@@ -75,4 +75,21 @@ class Board {
         do Screen.drawRectangle(128+(x*16), (y*16), 128+(x*16)+15, (y*16)+15);
         return;
     }
+
+    /** Clears board, setting all cells to white. */
+    method void clear() {
+        var int i, j, column, cell;
+        let i = 0;
+        while (i < x) {
+            let j = 0;
+            let column = cells[i];
+            while (j < y) {
+                let column[j] = false;
+                do drawCell(i, j, column[j]);
+                let j = j+1;
+            }
+            let i = i+1;
+        }
+        return;
+    }
 }
